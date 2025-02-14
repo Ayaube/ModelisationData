@@ -1,0 +1,848 @@
+// ICI UN EXEMPLE DE PROJET SUR LE MEME JEU DE DONNÉES
+
+
+
+
+import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+Importing the dataset
+
+import kagglehub
+
+# Download latest version
+path = kagglehub.dataset_download("wordsforthewise/lending-club")
+
+print("Path to dataset files:", path)
+Path to dataset files: /kaggle/input/lending-club
+Reading the dataset
+
+accepted=pd.read_csv('/kaggle/input/lending-club/accepted_2007_to_2018Q4.csv.gz')
+accepted
+<ipython-input-3-c170dc60d469>:1: DtypeWarning: Columns (0,19,49,59,118,129,130,131,134,135,136,139,145,146,147) have mixed types. Specify dtype option on import or set low_memory=False.
+  accepted=pd.read_csv('/kaggle/input/lending-club/accepted_2007_to_2018Q4.csv.gz')
+id	member_id	loan_amnt	funded_amnt	funded_amnt_inv	term	int_rate	installment	grade	sub_grade	...	hardship_payoff_balance_amount	hardship_last_payment_amount	disbursement_method	debt_settlement_flag	debt_settlement_flag_date	settlement_status	settlement_date	settlement_amount	settlement_percentage	settlement_term
+0	68407277	NaN	3600.0	3600.0	3600.0	36 months	13.99	123.03	C	C4	...	NaN	NaN	Cash	N	NaN	NaN	NaN	NaN	NaN	NaN
+1	68355089	NaN	24700.0	24700.0	24700.0	36 months	11.99	820.28	C	C1	...	NaN	NaN	Cash	N	NaN	NaN	NaN	NaN	NaN	NaN
+2	68341763	NaN	20000.0	20000.0	20000.0	60 months	10.78	432.66	B	B4	...	NaN	NaN	Cash	N	NaN	NaN	NaN	NaN	NaN	NaN
+3	66310712	NaN	35000.0	35000.0	35000.0	60 months	14.85	829.90	C	C5	...	NaN	NaN	Cash	N	NaN	NaN	NaN	NaN	NaN	NaN
+4	68476807	NaN	10400.0	10400.0	10400.0	60 months	22.45	289.91	F	F1	...	NaN	NaN	Cash	N	NaN	NaN	NaN	NaN	NaN	NaN
+...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...
+2260696	88985880	NaN	40000.0	40000.0	40000.0	60 months	10.49	859.56	B	B3	...	NaN	NaN	Cash	N	NaN	NaN	NaN	NaN	NaN	NaN
+2260697	88224441	NaN	24000.0	24000.0	24000.0	60 months	14.49	564.56	C	C4	...	NaN	NaN	Cash	Y	Mar-2019	ACTIVE	Mar-2019	10000.0	44.82	1.0
+2260698	88215728	NaN	14000.0	14000.0	14000.0	60 months	14.49	329.33	C	C4	...	NaN	NaN	Cash	N	NaN	NaN	NaN	NaN	NaN	NaN
+2260699	Total amount funded in policy code 1: 1465324575	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	...	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN
+2260700	Total amount funded in policy code 2: 521953170	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	...	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN
+2260701 rows × 151 columns
+
+accepted.info()
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 2260701 entries, 0 to 2260700
+Columns: 151 entries, id to settlement_term
+dtypes: float64(113), object(38)
+memory usage: 2.5+ GB
+for feature in accepted.columns:
+    print(feature)
+id
+member_id
+loan_amnt
+funded_amnt
+funded_amnt_inv
+term
+int_rate
+installment
+grade
+sub_grade
+emp_title
+emp_length
+home_ownership
+annual_inc
+verification_status
+issue_d
+loan_status
+pymnt_plan
+url
+desc
+purpose
+title
+zip_code
+addr_state
+dti
+delinq_2yrs
+earliest_cr_line
+fico_range_low
+fico_range_high
+inq_last_6mths
+mths_since_last_delinq
+mths_since_last_record
+open_acc
+pub_rec
+revol_bal
+revol_util
+total_acc
+initial_list_status
+out_prncp
+out_prncp_inv
+total_pymnt
+total_pymnt_inv
+total_rec_prncp
+total_rec_int
+total_rec_late_fee
+recoveries
+collection_recovery_fee
+last_pymnt_d
+last_pymnt_amnt
+next_pymnt_d
+last_credit_pull_d
+last_fico_range_high
+last_fico_range_low
+collections_12_mths_ex_med
+mths_since_last_major_derog
+policy_code
+application_type
+annual_inc_joint
+dti_joint
+verification_status_joint
+acc_now_delinq
+tot_coll_amt
+tot_cur_bal
+open_acc_6m
+open_act_il
+open_il_12m
+open_il_24m
+mths_since_rcnt_il
+total_bal_il
+il_util
+open_rv_12m
+open_rv_24m
+max_bal_bc
+all_util
+total_rev_hi_lim
+inq_fi
+total_cu_tl
+inq_last_12m
+acc_open_past_24mths
+avg_cur_bal
+bc_open_to_buy
+bc_util
+chargeoff_within_12_mths
+delinq_amnt
+mo_sin_old_il_acct
+mo_sin_old_rev_tl_op
+mo_sin_rcnt_rev_tl_op
+mo_sin_rcnt_tl
+mort_acc
+mths_since_recent_bc
+mths_since_recent_bc_dlq
+mths_since_recent_inq
+mths_since_recent_revol_delinq
+num_accts_ever_120_pd
+num_actv_bc_tl
+num_actv_rev_tl
+num_bc_sats
+num_bc_tl
+num_il_tl
+num_op_rev_tl
+num_rev_accts
+num_rev_tl_bal_gt_0
+num_sats
+num_tl_120dpd_2m
+num_tl_30dpd
+num_tl_90g_dpd_24m
+num_tl_op_past_12m
+pct_tl_nvr_dlq
+percent_bc_gt_75
+pub_rec_bankruptcies
+tax_liens
+tot_hi_cred_lim
+total_bal_ex_mort
+total_bc_limit
+total_il_high_credit_limit
+revol_bal_joint
+sec_app_fico_range_low
+sec_app_fico_range_high
+sec_app_earliest_cr_line
+sec_app_inq_last_6mths
+sec_app_mort_acc
+sec_app_open_acc
+sec_app_revol_util
+sec_app_open_act_il
+sec_app_num_rev_accts
+sec_app_chargeoff_within_12_mths
+sec_app_collections_12_mths_ex_med
+sec_app_mths_since_last_major_derog
+hardship_flag
+hardship_type
+hardship_reason
+hardship_status
+deferral_term
+hardship_amount
+hardship_start_date
+hardship_end_date
+payment_plan_start_date
+hardship_length
+hardship_dpd
+hardship_loan_status
+orig_projected_additional_accrued_interest
+hardship_payoff_balance_amount
+hardship_last_payment_amount
+disbursement_method
+debt_settlement_flag
+debt_settlement_flag_date
+settlement_status
+settlement_date
+settlement_amount
+settlement_percentage
+settlement_term
+miss=accepted.isna().sum()
+missing_entries_sorted = miss.sort_values(ascending=False)
+print(missing_entries_sorted)
+member_id                                     2260701
+orig_projected_additional_accrued_interest    2252050
+hardship_end_date                             2249784
+hardship_start_date                           2249784
+hardship_type                                 2249784
+                                               ...   
+policy_code                                        33
+revol_bal                                          33
+fico_range_high                                    33
+fico_range_low                                     33
+id                                                  0
+Length: 151, dtype: int64
+lower=1130351
+high=2260701
+
+missing_num=accepted.isnull().sum()
+
+features_to_drop=missing_num[(missing_num>=lower)& (missing_num<=high)].index
+accepted=accepted.drop(columns=features_to_drop)
+
+print("Dropped Features:" , features_to_drop)
+Dropped Features: Index(['member_id', 'desc', 'mths_since_last_delinq', 'mths_since_last_record',
+       'next_pymnt_d', 'mths_since_last_major_derog', 'annual_inc_joint',
+       'dti_joint', 'verification_status_joint', 'mths_since_recent_bc_dlq',
+       'mths_since_recent_revol_delinq', 'revol_bal_joint',
+       'sec_app_fico_range_low', 'sec_app_fico_range_high',
+       'sec_app_earliest_cr_line', 'sec_app_inq_last_6mths',
+       'sec_app_mort_acc', 'sec_app_open_acc', 'sec_app_revol_util',
+       'sec_app_open_act_il', 'sec_app_num_rev_accts',
+       'sec_app_chargeoff_within_12_mths',
+       'sec_app_collections_12_mths_ex_med',
+       'sec_app_mths_since_last_major_derog', 'hardship_type',
+       'hardship_reason', 'hardship_status', 'deferral_term',
+       'hardship_amount', 'hardship_start_date', 'hardship_end_date',
+       'payment_plan_start_date', 'hardship_length', 'hardship_dpd',
+       'hardship_loan_status', 'orig_projected_additional_accrued_interest',
+       'hardship_payoff_balance_amount', 'hardship_last_payment_amount',
+       'debt_settlement_flag_date', 'settlement_status', 'settlement_date',
+       'settlement_amount', 'settlement_percentage', 'settlement_term'],
+      dtype='object')
+accepted
+id	loan_amnt	funded_amnt	funded_amnt_inv	term	int_rate	installment	grade	sub_grade	emp_title	...	percent_bc_gt_75	pub_rec_bankruptcies	tax_liens	tot_hi_cred_lim	total_bal_ex_mort	total_bc_limit	total_il_high_credit_limit	hardship_flag	disbursement_method	debt_settlement_flag
+0	68407277	3600.0	3600.0	3600.0	36 months	13.99	123.03	C	C4	leadman	...	0.0	0.0	0.0	178050.0	7746.0	2400.0	13734.0	N	Cash	N
+1	68355089	24700.0	24700.0	24700.0	36 months	11.99	820.28	C	C1	Engineer	...	7.7	0.0	0.0	314017.0	39475.0	79300.0	24667.0	N	Cash	N
+2	68341763	20000.0	20000.0	20000.0	60 months	10.78	432.66	B	B4	truck driver	...	50.0	0.0	0.0	218418.0	18696.0	6200.0	14877.0	N	Cash	N
+3	66310712	35000.0	35000.0	35000.0	60 months	14.85	829.90	C	C5	Information Systems Officer	...	0.0	0.0	0.0	381215.0	52226.0	62500.0	18000.0	N	Cash	N
+4	68476807	10400.0	10400.0	10400.0	60 months	22.45	289.91	F	F1	Contract Specialist	...	60.0	0.0	0.0	439570.0	95768.0	20300.0	88097.0	N	Cash	N
+...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...
+2260696	88985880	40000.0	40000.0	40000.0	60 months	10.49	859.56	B	B3	Vice President	...	50.0	0.0	0.0	55970.0	28398.0	12300.0	42670.0	N	Cash	N
+2260697	88224441	24000.0	24000.0	24000.0	60 months	14.49	564.56	C	C4	Program Manager	...	40.0	1.0	0.0	84664.0	62426.0	20700.0	58764.0	N	Cash	Y
+2260698	88215728	14000.0	14000.0	14000.0	60 months	14.49	329.33	C	C4	Customer Service Technician	...	50.0	0.0	0.0	163804.0	44215.0	9500.0	34169.0	N	Cash	N
+2260699	Total amount funded in policy code 1: 1465324575	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	...	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN
+2260700	Total amount funded in policy code 2: 521953170	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	...	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN	NaN
+2260701 rows × 107 columns
+
+Dropping the rows with more than 70% of missing values
+
+threshold=accepted.shape[1]*0.7
+
+accepted=accepted.dropna(thresh=threshold)
+
+print("Data after dropping rows with more than 70% missing values:")
+accepted
+Data after dropping rows with more than 70% missing values:
+id	loan_amnt	funded_amnt	funded_amnt_inv	term	int_rate	installment	grade	sub_grade	emp_title	...	percent_bc_gt_75	pub_rec_bankruptcies	tax_liens	tot_hi_cred_lim	total_bal_ex_mort	total_bc_limit	total_il_high_credit_limit	hardship_flag	disbursement_method	debt_settlement_flag
+0	68407277	3600.0	3600.0	3600.0	36 months	13.99	123.03	C	C4	leadman	...	0.0	0.0	0.0	178050.0	7746.0	2400.0	13734.0	N	Cash	N
+1	68355089	24700.0	24700.0	24700.0	36 months	11.99	820.28	C	C1	Engineer	...	7.7	0.0	0.0	314017.0	39475.0	79300.0	24667.0	N	Cash	N
+2	68341763	20000.0	20000.0	20000.0	60 months	10.78	432.66	B	B4	truck driver	...	50.0	0.0	0.0	218418.0	18696.0	6200.0	14877.0	N	Cash	N
+3	66310712	35000.0	35000.0	35000.0	60 months	14.85	829.90	C	C5	Information Systems Officer	...	0.0	0.0	0.0	381215.0	52226.0	62500.0	18000.0	N	Cash	N
+4	68476807	10400.0	10400.0	10400.0	60 months	22.45	289.91	F	F1	Contract Specialist	...	60.0	0.0	0.0	439570.0	95768.0	20300.0	88097.0	N	Cash	N
+...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...
+2260694	89885898	24000.0	24000.0	24000.0	60 months	12.79	543.50	C	C1	Unit Operator	...	NaN	0.0	0.0	102517.0	104422.0	0.0	52017.0	N	Cash	N
+2260695	88977788	24000.0	24000.0	24000.0	60 months	10.49	515.74	B	B3	Database Administrator	...	42.9	0.0	1.0	227883.0	140118.0	27900.0	172283.0	N	Cash	N
+2260696	88985880	40000.0	40000.0	40000.0	60 months	10.49	859.56	B	B3	Vice President	...	50.0	0.0	0.0	55970.0	28398.0	12300.0	42670.0	N	Cash	N
+2260697	88224441	24000.0	24000.0	24000.0	60 months	14.49	564.56	C	C4	Program Manager	...	40.0	1.0	0.0	84664.0	62426.0	20700.0	58764.0	N	Cash	Y
+2260698	88215728	14000.0	14000.0	14000.0	60 months	14.49	329.33	C	C4	Customer Service Technician	...	50.0	0.0	0.0	163804.0	44215.0	9500.0	34169.0	N	Cash	N
+2190392 rows × 107 columns
+
+for features in accepted.isna().sum():
+    print(features)
+0
+0
+0
+0
+0
+0
+0
+0
+0
+162631
+144846
+0
+0
+0
+0
+0
+0
+0
+0
+23313
+1
+0
+1711
+0
+0
+0
+0
+1
+0
+0
+0
+1681
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+2313
+0
+68
+0
+0
+0
+0
+0
+0
+0
+0
+795854
+795853
+795853
+795853
+839648
+795853
+998574
+795853
+795853
+795853
+796072
+0
+795853
+795854
+795854
+0
+70
+24634
+25757
+0
+0
+68795
+1
+1
+0
+0
+23143
+242744
+0
+0
+0
+0
+0
+0
+0
+1
+0
+0
+83381
+0
+0
+0
+155
+25078
+0
+0
+0
+0
+0
+0
+0
+0
+0
+lower=100000
+high=800000
+
+missing_num1=accepted.isnull().sum()
+
+features_to_drop=missing_num1[(missing_num1>=lower)& (missing_num1<=high)].index
+accepted=accepted.drop(columns=features_to_drop)
+
+print("Dropped Features:" , features_to_drop)
+Dropped Features: Index(['emp_title', 'emp_length', 'open_acc_6m', 'open_act_il', 'open_il_12m',
+       'open_il_24m', 'total_bal_il', 'open_rv_12m', 'open_rv_24m',
+       'max_bal_bc', 'all_util', 'inq_fi', 'total_cu_tl', 'inq_last_12m',
+       'mths_since_recent_inq'],
+      dtype='object')
+accepted
+id	loan_amnt	funded_amnt	funded_amnt_inv	term	int_rate	installment	grade	sub_grade	home_ownership	...	percent_bc_gt_75	pub_rec_bankruptcies	tax_liens	tot_hi_cred_lim	total_bal_ex_mort	total_bc_limit	total_il_high_credit_limit	hardship_flag	disbursement_method	debt_settlement_flag
+0	68407277	3600.0	3600.0	3600.0	36 months	13.99	123.03	C	C4	MORTGAGE	...	0.0	0.0	0.0	178050.0	7746.0	2400.0	13734.0	N	Cash	N
+1	68355089	24700.0	24700.0	24700.0	36 months	11.99	820.28	C	C1	MORTGAGE	...	7.7	0.0	0.0	314017.0	39475.0	79300.0	24667.0	N	Cash	N
+2	68341763	20000.0	20000.0	20000.0	60 months	10.78	432.66	B	B4	MORTGAGE	...	50.0	0.0	0.0	218418.0	18696.0	6200.0	14877.0	N	Cash	N
+3	66310712	35000.0	35000.0	35000.0	60 months	14.85	829.90	C	C5	MORTGAGE	...	0.0	0.0	0.0	381215.0	52226.0	62500.0	18000.0	N	Cash	N
+4	68476807	10400.0	10400.0	10400.0	60 months	22.45	289.91	F	F1	MORTGAGE	...	60.0	0.0	0.0	439570.0	95768.0	20300.0	88097.0	N	Cash	N
+...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...
+2260694	89885898	24000.0	24000.0	24000.0	60 months	12.79	543.50	C	C1	MORTGAGE	...	NaN	0.0	0.0	102517.0	104422.0	0.0	52017.0	N	Cash	N
+2260695	88977788	24000.0	24000.0	24000.0	60 months	10.49	515.74	B	B3	MORTGAGE	...	42.9	0.0	1.0	227883.0	140118.0	27900.0	172283.0	N	Cash	N
+2260696	88985880	40000.0	40000.0	40000.0	60 months	10.49	859.56	B	B3	MORTGAGE	...	50.0	0.0	0.0	55970.0	28398.0	12300.0	42670.0	N	Cash	N
+2260697	88224441	24000.0	24000.0	24000.0	60 months	14.49	564.56	C	C4	RENT	...	40.0	1.0	0.0	84664.0	62426.0	20700.0	58764.0	N	Cash	Y
+2260698	88215728	14000.0	14000.0	14000.0	60 months	14.49	329.33	C	C4	MORTGAGE	...	50.0	0.0	0.0	163804.0	44215.0	9500.0	34169.0	N	Cash	N
+2190392 rows × 92 columns
+
+accepted.columns
+Index(['id', 'loan_amnt', 'funded_amnt', 'funded_amnt_inv', 'term', 'int_rate',
+       'installment', 'grade', 'sub_grade', 'home_ownership', 'annual_inc',
+       'verification_status', 'issue_d', 'loan_status', 'pymnt_plan', 'url',
+       'purpose', 'title', 'zip_code', 'addr_state', 'dti', 'delinq_2yrs',
+       'earliest_cr_line', 'fico_range_low', 'fico_range_high',
+       'inq_last_6mths', 'open_acc', 'pub_rec', 'revol_bal', 'revol_util',
+       'total_acc', 'initial_list_status', 'out_prncp', 'out_prncp_inv',
+       'total_pymnt', 'total_pymnt_inv', 'total_rec_prncp', 'total_rec_int',
+       'total_rec_late_fee', 'recoveries', 'collection_recovery_fee',
+       'last_pymnt_d', 'last_pymnt_amnt', 'last_credit_pull_d',
+       'last_fico_range_high', 'last_fico_range_low',
+       'collections_12_mths_ex_med', 'policy_code', 'application_type',
+       'acc_now_delinq', 'tot_coll_amt', 'tot_cur_bal', 'mths_since_rcnt_il',
+       'il_util', 'total_rev_hi_lim', 'acc_open_past_24mths', 'avg_cur_bal',
+       'bc_open_to_buy', 'bc_util', 'chargeoff_within_12_mths', 'delinq_amnt',
+       'mo_sin_old_il_acct', 'mo_sin_old_rev_tl_op', 'mo_sin_rcnt_rev_tl_op',
+       'mo_sin_rcnt_tl', 'mort_acc', 'mths_since_recent_bc',
+       'num_accts_ever_120_pd', 'num_actv_bc_tl', 'num_actv_rev_tl',
+       'num_bc_sats', 'num_bc_tl', 'num_il_tl', 'num_op_rev_tl',
+       'num_rev_accts', 'num_rev_tl_bal_gt_0', 'num_sats', 'num_tl_120dpd_2m',
+       'num_tl_30dpd', 'num_tl_90g_dpd_24m', 'num_tl_op_past_12m',
+       'pct_tl_nvr_dlq', 'percent_bc_gt_75', 'pub_rec_bankruptcies',
+       'tax_liens', 'tot_hi_cred_lim', 'total_bal_ex_mort', 'total_bc_limit',
+       'total_il_high_credit_limit', 'hardship_flag', 'disbursement_method',
+       'debt_settlement_flag'],
+      dtype='object')
+accepted['debt_settlement_flag'].unique()
+array(['N', 'Y'], dtype=object)
+accepted['title'].nunique()
+39098
+#NO=0, YES=1
+from sklearn.preprocessing import LabelEncoder
+
+label_encoder=LabelEncoder()
+accepted['Label']=label_encoder.fit_transform(accepted['debt_settlement_flag'])
+accepted
+id	loan_amnt	funded_amnt	funded_amnt_inv	term	int_rate	installment	grade	sub_grade	home_ownership	...	pub_rec_bankruptcies	tax_liens	tot_hi_cred_lim	total_bal_ex_mort	total_bc_limit	total_il_high_credit_limit	hardship_flag	disbursement_method	debt_settlement_flag	Label
+0	68407277	3600.0	3600.0	3600.0	36 months	13.99	123.03	C	C4	MORTGAGE	...	0.0	0.0	178050.0	7746.0	2400.0	13734.0	N	Cash	N	0
+1	68355089	24700.0	24700.0	24700.0	36 months	11.99	820.28	C	C1	MORTGAGE	...	0.0	0.0	314017.0	39475.0	79300.0	24667.0	N	Cash	N	0
+2	68341763	20000.0	20000.0	20000.0	60 months	10.78	432.66	B	B4	MORTGAGE	...	0.0	0.0	218418.0	18696.0	6200.0	14877.0	N	Cash	N	0
+3	66310712	35000.0	35000.0	35000.0	60 months	14.85	829.90	C	C5	MORTGAGE	...	0.0	0.0	381215.0	52226.0	62500.0	18000.0	N	Cash	N	0
+4	68476807	10400.0	10400.0	10400.0	60 months	22.45	289.91	F	F1	MORTGAGE	...	0.0	0.0	439570.0	95768.0	20300.0	88097.0	N	Cash	N	0
+...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...
+2260694	89885898	24000.0	24000.0	24000.0	60 months	12.79	543.50	C	C1	MORTGAGE	...	0.0	0.0	102517.0	104422.0	0.0	52017.0	N	Cash	N	0
+2260695	88977788	24000.0	24000.0	24000.0	60 months	10.49	515.74	B	B3	MORTGAGE	...	0.0	1.0	227883.0	140118.0	27900.0	172283.0	N	Cash	N	0
+2260696	88985880	40000.0	40000.0	40000.0	60 months	10.49	859.56	B	B3	MORTGAGE	...	0.0	0.0	55970.0	28398.0	12300.0	42670.0	N	Cash	N	0
+2260697	88224441	24000.0	24000.0	24000.0	60 months	14.49	564.56	C	C4	RENT	...	1.0	0.0	84664.0	62426.0	20700.0	58764.0	N	Cash	Y	1
+2260698	88215728	14000.0	14000.0	14000.0	60 months	14.49	329.33	C	C4	MORTGAGE	...	0.0	0.0	163804.0	44215.0	9500.0	34169.0	N	Cash	N	0
+2190392 rows × 93 columns
+
+Checking the feature importance before building the Logistic Regression Model
+
+import pandas as pd
+import lightgbm as lgb
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Load the dataset
+df = accepted
+
+# Identify categorical columns
+categorical_columns = df.select_dtypes(include=['object']).columns.tolist()
+
+# Initialize LabelEncoder for each categorical column
+label_encoders = {}
+for col in categorical_columns:
+    df[col] = df[col].astype(str)  # Ensure all entries are strings to avoid mixed types
+    le = LabelEncoder()
+    df[col] = le.fit_transform(df[col])
+    label_encoders[col] = le
+
+# Split into features and target
+X = df.drop('Label', axis=1)  # Replace 'Label' with your target column if named differently
+y = df['Label']
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize LGBMClassifier with parameters
+model = lgb.LGBMClassifier(
+    objective='binary',  # Change to 'multiclass' if you have multiple classes
+    metric='binary_logloss',
+    random_state=42
+)
+
+# Train the model
+model.fit(X_train, y_train)
+
+# Predictions and evaluation
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+print("Classification Report:\n", classification_report(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+# Feature importance
+importance = model.feature_importances_
+importance_df = pd.DataFrame({'Feature': X.columns, 'Importance': importance}).sort_values(by='Importance', ascending=False)
+[LightGBM] [Info] Number of positive: 27014, number of negative: 1725299
+[LightGBM] [Info] Auto-choosing row-wise multi-threading, the overhead of testing was 0.416795 seconds.
+You can set `force_row_wise=true` to remove the overhead.
+And if memory is not enough, you can set `force_col_wise=true`.
+[LightGBM] [Info] Total Bins 12148
+[LightGBM] [Info] Number of data points in the train set: 1752313, number of used features: 91
+[LightGBM] [Info] [binary:BoostFromScore]: pavg=0.015416 -> initscore=-4.156800
+[LightGBM] [Info] Start training from score -4.156800
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+Accuracy: 1.0
+Classification Report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00    431185
+           1       1.00      1.00      1.00      6894
+
+    accuracy                           1.00    438079
+   macro avg       1.00      1.00      1.00    438079
+weighted avg       1.00      1.00      1.00    438079
+
+Confusion Matrix:
+ [[431185      0]
+ [     0   6894]]
+Plot for feature importance
+
+drop_yes = importance_df[importance_df['Importance'] <= 5].index
+importance_df = importance_df.drop(drop_yes)
+print(importance_df)
+                    Feature  Importance
+0                        id         215
+1                 loan_amnt         146
+91     debt_settlement_flag         100
+5                  int_rate          55
+10               annual_inc          52
+6               installment          42
+3           funded_amnt_inv          39
+18                 zip_code          30
+17                    title          29
+20                      dti          17
+50             tot_coll_amt          12
+66     mths_since_recent_bc          12
+28                revol_bal          11
+32                out_prncp          11
+52       mths_since_rcnt_il           9
+40  collection_recovery_fee           8
+53                  il_util           6
+importance_df['Feature'].tolist()
+['id',
+ 'loan_amnt',
+ 'debt_settlement_flag',
+ 'int_rate',
+ 'annual_inc',
+ 'installment',
+ 'funded_amnt_inv',
+ 'zip_code',
+ 'title',
+ 'dti',
+ 'tot_coll_amt',
+ 'mths_since_recent_bc',
+ 'revol_bal',
+ 'out_prncp',
+ 'mths_since_rcnt_il',
+ 'collection_recovery_fee',
+ 'il_util']
+features_to_keep = importance_df['Feature'].tolist()
+additional_feature = 'Label'
+
+if additional_feature not in features_to_keep:
+    features_to_keep.append(additional_feature)
+
+    
+filtered_df = accepted[features_to_keep]
+filtered_df
+id	loan_amnt	debt_settlement_flag	int_rate	annual_inc	installment	funded_amnt_inv	zip_code	title	dti	tot_coll_amt	mths_since_recent_bc	revol_bal	out_prncp	mths_since_rcnt_il	collection_recovery_fee	il_util	Label
+0	1633051	3600.0	0	13.99	55000.0	123.03	3600.0	182	10681	5.91	722.0	4.0	2765.0	0.00	21.0	0.0	36.0	0
+1	1630402	24700.0	0	11.99	65000.0	820.28	24700.0	553	2861	16.06	0.0	2.0	21470.0	0.00	19.0	0.0	73.0	0
+2	1630131	20000.0	0	10.78	63000.0	432.66	20000.0	578	35955	10.78	0.0	101.0	7869.0	0.00	19.0	0.0	73.0	0
+3	1595559	35000.0	0	14.85	110000.0	829.90	35000.0	69	10681	17.06	0.0	2.0	7802.0	15897.65	23.0	0.0	70.0	0
+4	1635854	10400.0	0	22.45	104433.0	289.91	10400.0	166	19180	25.37	0.0	4.0	21929.0	0.00	14.0	0.0	84.0	0
+...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...
+2260694	1991949	24000.0	0	12.79	95000.0	543.50	24000.0	346	16157	19.61	0.0	NaN	49431.0	14287.39	3.0	0.0	106.0	0
+2260695	1983099	24000.0	0	10.49	108000.0	515.74	24000.0	804	10681	34.94	0.0	15.0	21665.0	13951.42	16.0	0.0	77.0	0
+2260696	1983435	40000.0	0	10.49	227000.0	859.56	40000.0	861	35955	12.75	0.0	41.0	8633.0	23252.59	15.0	0.0	46.0	0
+2260697	1966928	24000.0	1	14.49	110000.0	564.56	24000.0	324	10681	18.30	0.0	9.0	17641.0	0.00	20.0	0.0	78.0	1
+2260698	1966472	14000.0	0	14.49	95000.0	329.33	14000.0	736	35955	23.36	0.0	75.0	7662.0	8456.12	7.0	0.0	94.0	0
+2190392 rows × 18 columns
+
+filtered_df.isna().sum()
+id                              0
+loan_amnt                       0
+debt_settlement_flag            0
+int_rate                        0
+annual_inc                      0
+installment                     0
+funded_amnt_inv                 0
+zip_code                        0
+title                           0
+dti                          1711
+tot_coll_amt                    0
+mths_since_recent_bc        23143
+revol_bal                       0
+out_prncp                       0
+mths_since_rcnt_il         839648
+collection_recovery_fee         0
+il_util                    998574
+Label                           0
+dtype: int64
+columns_to_fill = ['dti', 'mths_since_recent_bc', 'mths_since_rcnt_il', 'il_util']
+
+for column in columns_to_fill:
+    filtered_df[column].fillna(filtered_df[column].mean(), inplace=True)
+
+# Verify that missing values have been filled
+print(filtered_df[columns_to_fill].isnull().sum())
+dti                     0
+mths_since_recent_bc    0
+mths_since_rcnt_il      0
+il_util                 0
+dtype: int64
+<ipython-input-22-5cac17c6794d>:4: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  filtered_df[column].fillna(filtered_df[column].mean(), inplace=True)
+filtered_df.dropna(inplace=True)
+<ipython-input-23-28e735433b1f>:1: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  filtered_df.dropna(inplace=True)
+filtered_df['Label'].value_counts()
+Label
+0    2156484
+1      33908
+Name: count, dtype: int64
+Correlations
+
+filtered_df = filtered_df.drop(columns=['debt_settlement_flag', 'loan_amnt'], errors='ignore')
+filtered_df
+id	int_rate	annual_inc	installment	funded_amnt_inv	zip_code	title	dti	tot_coll_amt	mths_since_recent_bc	revol_bal	out_prncp	mths_since_rcnt_il	collection_recovery_fee	il_util	Label
+0	1633051	13.99	55000.0	123.03	3600.0	182	10681	5.91	722.0	4.00000	2765.0	0.00	21.0	0.0	36.0	0
+1	1630402	11.99	65000.0	820.28	24700.0	553	2861	16.06	0.0	2.00000	21470.0	0.00	19.0	0.0	73.0	0
+2	1630131	10.78	63000.0	432.66	20000.0	578	35955	10.78	0.0	101.00000	7869.0	0.00	19.0	0.0	73.0	0
+3	1595559	14.85	110000.0	829.90	35000.0	69	10681	17.06	0.0	2.00000	7802.0	15897.65	23.0	0.0	70.0	0
+4	1635854	22.45	104433.0	289.91	10400.0	166	19180	25.37	0.0	4.00000	21929.0	0.00	14.0	0.0	84.0	0
+...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...
+2260694	1991949	12.79	95000.0	543.50	24000.0	346	16157	19.61	0.0	24.85511	49431.0	14287.39	3.0	0.0	106.0	0
+2260695	1983099	10.49	108000.0	515.74	24000.0	804	10681	34.94	0.0	15.00000	21665.0	13951.42	16.0	0.0	77.0	0
+2260696	1983435	10.49	227000.0	859.56	40000.0	861	35955	12.75	0.0	41.00000	8633.0	23252.59	15.0	0.0	46.0	0
+2260697	1966928	14.49	110000.0	564.56	24000.0	324	10681	18.30	0.0	9.00000	17641.0	0.00	20.0	0.0	78.0	1
+2260698	1966472	14.49	95000.0	329.33	14000.0	736	35955	23.36	0.0	75.00000	7662.0	8456.12	7.0	0.0	94.0	0
+2190392 rows × 16 columns
+
+Balance dataset
+
+from sklearn.utils import resample
+
+# Separate majority and minority classes
+majority_class = filtered_df[filtered_df['Label'] == 0]
+minority_class = filtered_df[filtered_df['Label'] == 1]
+minority_upsampled = resample(minority_class,
+                              replace=True,       # Sample with replacement
+                              n_samples=len(majority_class),  # Match majority class count
+                              random_state=42)   # For reproducibility
+
+# Combine majority class with upsampled minority class
+balanced_df = pd.concat([majority_class, minority_upsampled])
+
+# Shuffle the new balanced dataset
+balanced_df = balanced_df.sample(frac=1, random_state=42).reset_index(drop=True)
+balanced_df['Label'].value_counts()
+Label
+0    2156484
+1    2156484
+Name: count, dtype: int64
+filtered_df=balanced_df
+filtered_df['Label'].value_counts()
+Label
+0    2156484
+1    2156484
+Name: count, dtype: int64
+X =filtered_df.drop('Label', axis=1)
+y =filtered_df['Label']
+from sklearn.model_selection import train_test_split
+
+X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
+X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+X_val=scaler.transform(X_val)
+LOGISTIC REGRESSION
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+
+lg = LogisticRegression(C=0.01, random_state=42)
+lg.fit(X_train, y_train)
+lg_predictions = lg.predict(X_test)
+
+# Evaluate the model
+print("Logistic Regression Accuracy:", accuracy_score(y_test, lg_predictions))
+print(classification_report(y_test, lg_predictions))
+Logistic Regression Accuracy: 0.8284014430879857
+              precision    recall  f1-score   support
+
+           0       0.78      0.91      0.84    323188
+           1       0.89      0.75      0.81    323758
+
+    accuracy                           0.83    646946
+   macro avg       0.84      0.83      0.83    646946
+weighted avg       0.84      0.83      0.83    646946
+
+y_val_pred = lg.predict(X_val)
+print(f"Validation Accuracy: {accuracy_score(y_val, y_val_pred)}")
+print(classification_report(y_val, y_val_pred))
+Validation Accuracy: 0.8278014359798747
+              precision    recall  f1-score   support
+
+           0       0.78      0.91      0.84    323923
+           1       0.89      0.75      0.81    323022
+
+    accuracy                           0.83    646945
+   macro avg       0.84      0.83      0.83    646945
+weighted avg       0.84      0.83      0.83    646945
+
+import joblib
+joblib.dump(lg, 'logistic_regression_model.joblib')
+print("Model saved successfully!")
+Model saved successfully!
+ 
