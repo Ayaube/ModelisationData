@@ -1,0 +1,248 @@
+=== Analyse données complètes démarrée le 2025-02-14 16:31:14 ===
+================================================================================
+
+[25.0% terminé] Chargement et préparation des données...
+Temps pour cette étape : 0.00 secondes
+Temps total écoulé : 0.00 secondes
+
+Nombre initial de prêts acceptés : 2260701
+Nombre initial de prêts refusés : 27648741
+Correspondances entre les colonnes :
+Prêts rejetés -> Prêts acceptés
+----------------------------------------
+Amount Requested -> loan_amnt
+Risk_Score -> fico_range_low
+Debt-To-Income Ratio -> dti
+Zip Code -> zip_code
+State -> addr_state
+Employment Length -> emp_length
+
+Nettoyage des données...
+Colonne loan_amnt: 33 valeurs manquantes
+Colonne loan_amnt: valeurs manquantes remplacées par la médiane (12900.00)
+Colonne fico_range_low: 33 valeurs manquantes
+Colonne fico_range_low: valeurs manquantes remplacées par la médiane (690.00)
+Colonne dti: 1744 valeurs manquantes
+Colonne dti: valeurs manquantes remplacées par la médiane (17.84)
+Colonne emp_length: 146940 valeurs manquantes
+Colonne addr_state: 33 valeurs manquantes
+Colonne zip_code: 34 valeurs manquantes
+Colonne loan_amnt: valeurs manquantes remplacées par la médiane (10000.00)
+Colonne fico_range_low: 18497630 valeurs manquantes
+Colonne fico_range_low: valeurs manquantes remplacées par la médiane (637.00)
+Colonne dti: valeurs manquantes remplacées par la médiane (19.98)
+Colonne emp_length: 951355 valeurs manquantes
+Colonne addr_state: 22 valeurs manquantes
+Colonne zip_code: 293 valeurs manquantes
+
+Statistiques descriptives des variables numériques:
+          loan_amnt  fico_range_low           dti
+count  2.990944e+07    2.990944e+07  2.990944e+07
+mean   1.327788e+04    6.389541e+02  1.339285e+02
+std    1.465948e+04    5.351532e+01  1.013309e+04
+min    0.000000e+00    0.000000e+00 -1.000000e+00
+25%    5.000000e+03    6.370000e+02  8.550000e+00
+50%    1.000000e+04    6.370000e+02  1.968000e+01
+75%    2.000000e+04    6.370000e+02  3.510000e+01
+max    1.400000e+06    9.900000e+02  5.000003e+07
+
+Distribution des variables catégorielles:
+
+emp_length:
+emp_length
+< 1 year        23184303
+5 years          2419164
+10+ years        1164389
+Non spécifié     1098295
+1 year            416243
+Name: count, dtype: int64
+
+addr_state:
+addr_state
+CA    3556702
+TX    2681846
+FL    2329575
+NY    2177568
+GA    1157810
+Name: count, dtype: int64
+
+[50.0% terminé] Analyse des corrélations numériques...
+Temps pour cette étape : 42.51 secondes
+Temps total écoulé : 42.51 secondes
+
+Analyse des variables numériques:
+
+loan_amnt:
+Prêts acceptés:
+count    2.260701e+06
+mean     1.504690e+04
+std      9.190182e+03
+min      5.000000e+02
+25%      8.000000e+03
+50%      1.290000e+04
+75%      2.000000e+04
+max      4.000000e+04
+Name: loan_amnt, dtype: float64
+
+Prêts rejetés:
+count    2.764874e+07
+mean     1.313324e+04
+std      1.500964e+04
+min      0.000000e+00
+25%      4.800000e+03
+50%      1.000000e+04
+75%      2.000000e+04
+max      1.400000e+06
+Name: loan_amnt, dtype: float64
+
+fico_range_low:
+Prêts acceptés:
+count    2.260701e+06
+mean     6.985881e+02
+std      3.301015e+01
+min      6.100000e+02
+25%      6.750000e+02
+50%      6.900000e+02
+75%      7.150000e+02
+max      8.450000e+02
+Name: fico_range_low, dtype: float64
+
+Prêts rejetés:
+count    2.764874e+07
+mean     6.340782e+02
+std      5.190770e+01
+min      0.000000e+00
+25%      6.370000e+02
+50%      6.370000e+02
+75%      6.370000e+02
+max      9.900000e+02
+Name: fico_range_low, dtype: float64
+
+dti:
+Prêts acceptés:
+count    2.260701e+06
+mean     1.882344e+01
+std      1.417788e+01
+min     -1.000000e+00
+25%      1.190000e+01
+50%      1.784000e+01
+75%      2.448000e+01
+max      9.990000e+02
+Name: dti, dtype: float64
+
+Prêts rejetés:
+count    2.764874e+07
+mean     1.433401e+02
+std      1.053916e+04
+min     -1.000000e+00
+25%      8.060000e+00
+50%      1.998000e+01
+75%      3.661000e+01
+max      5.000003e+07
+Name: dti, dtype: float64
+
+[75.0% terminé] Analyse des variables catégorielles...
+Temps pour cette étape : 66.02 secondes
+Temps total écoulé : 108.53 secondes
+
+Analyse des variables catégorielles:
+
+Statistiques pour emp_length:
+              nombre_observations  taux_acceptation  ecart_type
+emp_length                                                     
+10+ years                 1164389             0.642       0.479
+7 years                    148361             0.625       0.484
+9 years                    127349             0.623       0.485
+6 years                    174253             0.589       0.492
+8 years                    157879             0.582       0.493
+4 years                    258228             0.529       0.499
+2 years                    402881             0.506       0.500
+3 years                    358097             0.505       0.500
+1 year                     416243             0.357       0.479
+Non spécifié              1098295             0.134       0.340
+5 years                   2419164             0.058       0.233
+< 1 year                 23184303             0.008       0.090
+
+Test du chi2 pour emp_length:
+chi2 = 12589870.91, p-value = 0.0000
+
+Statistiques pour addr_state:
+              nombre_observations  taux_acceptation  ecart_type
+addr_state                                                     
+Non spécifié                   55             0.600       0.494
+MN                         398752             0.099       0.299
+CT                         375297             0.095       0.294
+CO                         518204             0.093       0.290
+DC                          58163             0.092       0.289
+NV                         366236             0.089       0.285
+NJ                         936437             0.089       0.284
+CA                        3556702             0.088       0.284
+WY                          54393             0.087       0.282
+NH                         128726             0.087       0.281
+VT                          56434             0.087       0.283
+MA                         598555             0.087       0.281
+WA                         544910             0.086       0.281
+OR                         310342             0.086       0.281
+NY                        2177568             0.086       0.280
+AZ                         642657             0.084       0.277
+MD                         648766             0.083       0.276
+IL                        1092219             0.083       0.277
+RI                         122165             0.082       0.274
+MT                          77511             0.081       0.273
+AK                          65658             0.080       0.271
+VA                         801788             0.079       0.269
+UT                         194414             0.077       0.267
+KS                         249680             0.077       0.266
+WI                         391542             0.076       0.265
+SD                          61447             0.074       0.262
+WV                         114580             0.073       0.260
+MI                         814411             0.072       0.259
+FL                        2329575             0.070       0.254
+ND                          51213             0.070       0.255
+TX                        2681846             0.069       0.254
+OH                        1086444             0.069       0.254
+NM                         177452             0.068       0.251
+PA                        1124633             0.068       0.252
+MO                         532233             0.068       0.251
+NC                         926590             0.068       0.251
+IN                         554839             0.068       0.251
+NE                         120633             0.065       0.246
+GA                        1157810             0.064       0.245
+HI                         166356             0.064       0.245
+DE                         100605             0.064       0.245
+OK                         326756             0.063       0.244
+ME                          83813             0.059       0.236
+KY                         371942             0.059       0.235
+TN                         611502             0.058       0.234
+LA                         447393             0.058       0.233
+SC                         496384             0.056       0.231
+AR                         308311             0.055       0.229
+AL                         520510             0.052       0.223
+ID                          84560             0.051       0.220
+MS                         289960             0.044       0.204
+IA                            470             0.030       0.170
+
+Test du chi2 pour addr_state:
+chi2 = 57839.97, p-value = 0.0000
+
+[100.0% terminé] Calcul de l'importance des variables...
+Temps pour cette étape : 532.94 secondes
+Temps total écoulé : 641.47 secondes
+
+Importance relative des variables:
+         Variable  Coefficient  Importance    Odds_Ratio
+2             dti  -202.349263  202.349263  1.320783e-88
+1  fico_range_low     1.933787    1.933787  6.915650e+00
+0       loan_amnt    -0.023447    0.023447  9.768254e-01
+
+Interprétation des Odds Ratios:
+Une augmentation d'un écart-type de dti diminue les chances d'acceptation par un facteur de 0.00
+Une augmentation d'un écart-type de fico_range_low augmente les chances d'acceptation par un facteur de 6.92
+Une augmentation d'un écart-type de loan_amnt diminue les chances d'acceptation par un facteur de 0.98
+
+Analyse terminée.
+Les graphiques ont été sauvegardés dans : complet/figures
+Les résultats détaillés ont été sauvegardés dans : complet/resultats/analyse_resultats_20250214_163114.txt
+
+Temps total d'exécution : 654.51 secondes
+================================================================================

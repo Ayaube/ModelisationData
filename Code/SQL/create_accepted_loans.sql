@@ -19,13 +19,13 @@ CREATE TABLE accepted_loans (
     desc TEXT,
     purpose TEXT,
     title TEXT,
-    dti REAL,
-    earliest_cr_line TEXT,
-    open_acc INTEGER,
-    pub_rec INTEGER,
+    dti TEXT,
+    earliest_cr_line TEXT,  -- Probablement une date, donc mettre en TEXT
+    open_acc TEXT,
+    pub_rec TEXT,
     revol_bal REAL,
     revol_util REAL,
-    total_acc INTEGER,
+    total_acc TEXT,  -- Passer en TEXT pour éviter les erreurs
     initial_list_status TEXT,
     application_type TEXT,
     pub_rec_bankruptcies INTEGER,
@@ -36,7 +36,7 @@ CREATE TABLE accepted_loans (
     hardship_reason TEXT,
     hardship_status TEXT,
     deferral_term INTEGER,
-    hardship_amount REAL,
+    hardship_amount TEXT,
     hardship_start_date TEXT,
     hardship_end_date TEXT,
     payment_plan_start_date TEXT,
@@ -55,16 +55,3 @@ CREATE TABLE accepted_loans (
     settlement_percentage REAL,
     settlement_term REAL
 );
-
-CREATE TABLE rejected_loans (
-    Amount_Requested REAL,
-    Application_Date TEXT,
-    Loan_Title TEXT,
-    Risk_Score REAL,
-    Debt_To_Income_Ratio TEXT,
-    Zip_Code TEXT,
-    State TEXT,
-    Employment_Length TEXT,
-    Policy_Code REAL
-);
-

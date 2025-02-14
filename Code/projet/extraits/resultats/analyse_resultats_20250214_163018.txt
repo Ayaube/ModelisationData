@@ -1,0 +1,2 @@
+Erreur lors de l'analyse extraits : 'TeeOutput' object does not support the context manager protocol
+Erreur lors de l'exécution du programme : 'TeeOutput' object does not support the context manager protocol
